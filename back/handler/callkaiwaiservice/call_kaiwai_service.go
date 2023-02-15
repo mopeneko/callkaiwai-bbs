@@ -1,7 +1,12 @@
 package callkaiwaiservice
 
-type CallKaiwaiService struct{}
+import (
+	"github.com/mopeneko/callkaiwai-bbs/back/gen/callkaiwaibbs/v1/callkaiwaibbsv1connect"
+)
 
-func NewCallKaiwaiServiceHandler() *CallKaiwaiService {
+type CallKaiwaiService struct {
+}
+
+func NewCallKaiwaiServiceHandler() callkaiwaibbsv1connect.CallKaiwaiBBSServiceHandler {
 	return &CallKaiwaiService{}
 }
