@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+option go_package = "github.com/mopeneko/callkaiwai-bbs/back/gen/callkaiwaibbs/v1;callkaiwaibbsv1";
+
+package callkaiwaibbs.v1;
+
+message PingRequest {}
+
+message PingResponse {
+  string text = 1;
+}
+
+service CallKaiwaiBBSService {
+  rpc Ping(PingRequest) returns (PingResponse) {}
+}
