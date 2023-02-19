@@ -55,29 +55,15 @@ func (ialc *IPAddressLogCreate) SetNillableUpdatedAt(t *time.Time) *IPAddressLog
 	return ialc
 }
 
-// SetID sets the "id" field.
-func (ialc *IPAddressLogCreate) SetID(s string) *IPAddressLogCreate {
-	ialc.mutation.SetID(s)
+// SetPostID sets the "post" edge to the Post entity by ID.
+func (ialc *IPAddressLogCreate) SetPostID(id int) *IPAddressLogCreate {
+	ialc.mutation.SetPostID(id)
 	return ialc
 }
 
-// SetNillableID sets the "id" field if the given value is not nil.
-func (ialc *IPAddressLogCreate) SetNillableID(s *string) *IPAddressLogCreate {
-	if s != nil {
-		ialc.SetID(*s)
-	}
-	return ialc
-}
-
-// SetPostIDID sets the "post_id" edge to the Post entity by ID.
-func (ialc *IPAddressLogCreate) SetPostIDID(id string) *IPAddressLogCreate {
-	ialc.mutation.SetPostIDID(id)
-	return ialc
-}
-
-// SetPostID sets the "post_id" edge to the Post entity.
-func (ialc *IPAddressLogCreate) SetPostID(p *Post) *IPAddressLogCreate {
-	return ialc.SetPostIDID(p.ID)
+// SetPost sets the "post" edge to the Post entity.
+func (ialc *IPAddressLogCreate) SetPost(p *Post) *IPAddressLogCreate {
+	return ialc.SetPostID(p.ID)
 }
 
 // Mutation returns the IPAddressLogMutation object of the builder.
@@ -123,10 +109,6 @@ func (ialc *IPAddressLogCreate) defaults() {
 		v := ipaddresslog.DefaultUpdatedAt()
 		ialc.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := ialc.mutation.ID(); !ok {
-		v := ipaddresslog.DefaultID()
-		ialc.mutation.SetID(v)
-	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -145,8 +127,8 @@ func (ialc *IPAddressLogCreate) check() error {
 	if _, ok := ialc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "IPAddressLog.updated_at"`)}
 	}
-	if _, ok := ialc.mutation.PostIDID(); !ok {
-		return &ValidationError{Name: "post_id", err: errors.New(`ent: missing required edge "IPAddressLog.post_id"`)}
+	if _, ok := ialc.mutation.PostID(); !ok {
+		return &ValidationError{Name: "post", err: errors.New(`ent: missing required edge "IPAddressLog.post"`)}
 	}
 	return nil
 }
@@ -162,13 +144,8 @@ func (ialc *IPAddressLogCreate) sqlSave(ctx context.Context) (*IPAddressLog, err
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(string); ok {
-			_node.ID = id
-		} else {
-			return nil, fmt.Errorf("unexpected IPAddressLog.ID type: %T", _spec.ID.Value)
-		}
-	}
+	id := _spec.ID.Value.(int64)
+	_node.ID = int(id)
 	ialc.mutation.id = &_node.ID
 	ialc.mutation.done = true
 	return _node, nil
@@ -177,12 +154,8 @@ func (ialc *IPAddressLogCreate) sqlSave(ctx context.Context) (*IPAddressLog, err
 func (ialc *IPAddressLogCreate) createSpec() (*IPAddressLog, *sqlgraph.CreateSpec) {
 	var (
 		_node = &IPAddressLog{config: ialc.config}
-		_spec = sqlgraph.NewCreateSpec(ipaddresslog.Table, sqlgraph.NewFieldSpec(ipaddresslog.FieldID, field.TypeString))
+		_spec = sqlgraph.NewCreateSpec(ipaddresslog.Table, sqlgraph.NewFieldSpec(ipaddresslog.FieldID, field.TypeInt))
 	)
-	if id, ok := ialc.mutation.ID(); ok {
-		_node.ID = id
-		_spec.ID.Value = id
-	}
 	if value, ok := ialc.mutation.IPAddress(); ok {
 		_spec.SetField(ipaddresslog.FieldIPAddress, field.TypeString, value)
 		_node.IPAddress = value
@@ -195,16 +168,16 @@ func (ialc *IPAddressLogCreate) createSpec() (*IPAddressLog, *sqlgraph.CreateSpe
 		_spec.SetField(ipaddresslog.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if nodes := ialc.mutation.PostIDIDs(); len(nodes) > 0 {
+	if nodes := ialc.mutation.PostIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   ipaddresslog.PostIDTable,
-			Columns: []string{ipaddresslog.PostIDColumn},
+			Table:   ipaddresslog.PostTable,
+			Columns: []string{ipaddresslog.PostColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt,
 					Column: post.FieldID,
 				},
 			},
@@ -259,6 +232,10 @@ func (ialcb *IPAddressLogCreateBulk) Save(ctx context.Context) ([]*IPAddressLog,
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
+				if specs[i].ID.Value != nil {
+					id := specs[i].ID.Value.(int64)
+					nodes[i].ID = int(id)
+				}
 				mutation.done = true
 				return nodes[i], nil
 			})

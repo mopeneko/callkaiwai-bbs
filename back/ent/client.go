@@ -196,7 +196,7 @@ func (c *IPAddressLogClient) UpdateOne(ial *IPAddressLog) *IPAddressLogUpdateOne
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *IPAddressLogClient) UpdateOneID(id string) *IPAddressLogUpdateOne {
+func (c *IPAddressLogClient) UpdateOneID(id int) *IPAddressLogUpdateOne {
 	mutation := newIPAddressLogMutation(c.config, OpUpdateOne, withIPAddressLogID(id))
 	return &IPAddressLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -213,7 +213,7 @@ func (c *IPAddressLogClient) DeleteOne(ial *IPAddressLog) *IPAddressLogDeleteOne
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *IPAddressLogClient) DeleteOneID(id string) *IPAddressLogDeleteOne {
+func (c *IPAddressLogClient) DeleteOneID(id int) *IPAddressLogDeleteOne {
 	builder := c.Delete().Where(ipaddresslog.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -230,12 +230,12 @@ func (c *IPAddressLogClient) Query() *IPAddressLogQuery {
 }
 
 // Get returns a IPAddressLog entity by its id.
-func (c *IPAddressLogClient) Get(ctx context.Context, id string) (*IPAddressLog, error) {
+func (c *IPAddressLogClient) Get(ctx context.Context, id int) (*IPAddressLog, error) {
 	return c.Query().Where(ipaddresslog.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *IPAddressLogClient) GetX(ctx context.Context, id string) *IPAddressLog {
+func (c *IPAddressLogClient) GetX(ctx context.Context, id int) *IPAddressLog {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -243,15 +243,15 @@ func (c *IPAddressLogClient) GetX(ctx context.Context, id string) *IPAddressLog 
 	return obj
 }
 
-// QueryPostID queries the post_id edge of a IPAddressLog.
-func (c *IPAddressLogClient) QueryPostID(ial *IPAddressLog) *PostQuery {
+// QueryPost queries the post edge of a IPAddressLog.
+func (c *IPAddressLogClient) QueryPost(ial *IPAddressLog) *PostQuery {
 	query := (&PostClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ial.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(ipaddresslog.Table, ipaddresslog.FieldID, id),
 			sqlgraph.To(post.Table, post.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ipaddresslog.PostIDTable, ipaddresslog.PostIDColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, ipaddresslog.PostTable, ipaddresslog.PostColumn),
 		)
 		fromV = sqlgraph.Neighbors(ial.driver.Dialect(), step)
 		return fromV, nil
@@ -330,7 +330,7 @@ func (c *PostClient) UpdateOne(po *Post) *PostUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *PostClient) UpdateOneID(id string) *PostUpdateOne {
+func (c *PostClient) UpdateOneID(id int) *PostUpdateOne {
 	mutation := newPostMutation(c.config, OpUpdateOne, withPostID(id))
 	return &PostUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -347,7 +347,7 @@ func (c *PostClient) DeleteOne(po *Post) *PostDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *PostClient) DeleteOneID(id string) *PostDeleteOne {
+func (c *PostClient) DeleteOneID(id int) *PostDeleteOne {
 	builder := c.Delete().Where(post.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -364,12 +364,12 @@ func (c *PostClient) Query() *PostQuery {
 }
 
 // Get returns a Post entity by its id.
-func (c *PostClient) Get(ctx context.Context, id string) (*Post, error) {
+func (c *PostClient) Get(ctx context.Context, id int) (*Post, error) {
 	return c.Query().Where(post.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *PostClient) GetX(ctx context.Context, id string) *Post {
+func (c *PostClient) GetX(ctx context.Context, id int) *Post {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)

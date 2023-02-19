@@ -10,11 +10,11 @@ import (
 var (
 	// IPAddressLogsColumns holds the columns for the "ip_address_logs" table.
 	IPAddressLogsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString, Size: 2147483647},
+		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "ip_address", Type: field.TypeString, Size: 2147483647},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "post_ip_address_log", Type: field.TypeString, Size: 2147483647},
+		{Name: "post_ip_address_log", Type: field.TypeInt},
 	}
 	// IPAddressLogsTable holds the schema information for the "ip_address_logs" table.
 	IPAddressLogsTable = &schema.Table{
@@ -32,7 +32,7 @@ var (
 	}
 	// PostsColumns holds the columns for the "posts" table.
 	PostsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString, Size: 2147483647},
+		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString, Size: 2147483647},
 		{Name: "gender", Type: field.TypeInt},
 		{Name: "introduction", Type: field.TypeString, Nullable: true, Size: 2147483647},

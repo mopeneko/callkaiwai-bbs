@@ -11,47 +11,47 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id string) predicate.IPAddressLog {
+func ID(id int) predicate.IPAddressLog {
 	return predicate.IPAddressLog(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id string) predicate.IPAddressLog {
+func IDEQ(id int) predicate.IPAddressLog {
 	return predicate.IPAddressLog(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id string) predicate.IPAddressLog {
+func IDNEQ(id int) predicate.IPAddressLog {
 	return predicate.IPAddressLog(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...string) predicate.IPAddressLog {
+func IDIn(ids ...int) predicate.IPAddressLog {
 	return predicate.IPAddressLog(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...string) predicate.IPAddressLog {
+func IDNotIn(ids ...int) predicate.IPAddressLog {
 	return predicate.IPAddressLog(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id string) predicate.IPAddressLog {
+func IDGT(id int) predicate.IPAddressLog {
 	return predicate.IPAddressLog(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id string) predicate.IPAddressLog {
+func IDGTE(id int) predicate.IPAddressLog {
 	return predicate.IPAddressLog(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id string) predicate.IPAddressLog {
+func IDLT(id int) predicate.IPAddressLog {
 	return predicate.IPAddressLog(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id string) predicate.IPAddressLog {
+func IDLTE(id int) predicate.IPAddressLog {
 	return predicate.IPAddressLog(sql.FieldLTE(FieldID, id))
 }
 
@@ -215,24 +215,24 @@ func UpdatedAtLTE(v time.Time) predicate.IPAddressLog {
 	return predicate.IPAddressLog(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
-// HasPostID applies the HasEdge predicate on the "post_id" edge.
-func HasPostID() predicate.IPAddressLog {
+// HasPost applies the HasEdge predicate on the "post" edge.
+func HasPost() predicate.IPAddressLog {
 	return predicate.IPAddressLog(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, PostIDTable, PostIDColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, PostTable, PostColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasPostIDWith applies the HasEdge predicate on the "post_id" edge with a given conditions (other predicates).
-func HasPostIDWith(preds ...predicate.Post) predicate.IPAddressLog {
+// HasPostWith applies the HasEdge predicate on the "post" edge with a given conditions (other predicates).
+func HasPostWith(preds ...predicate.Post) predicate.IPAddressLog {
 	return predicate.IPAddressLog(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(PostIDInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, PostIDTable, PostIDColumn),
+			sqlgraph.To(PostInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, PostTable, PostColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

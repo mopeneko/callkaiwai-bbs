@@ -41,15 +41,15 @@ func (ialu *IPAddressLogUpdate) SetUpdatedAt(t time.Time) *IPAddressLogUpdate {
 	return ialu
 }
 
-// SetPostIDID sets the "post_id" edge to the Post entity by ID.
-func (ialu *IPAddressLogUpdate) SetPostIDID(id string) *IPAddressLogUpdate {
-	ialu.mutation.SetPostIDID(id)
+// SetPostID sets the "post" edge to the Post entity by ID.
+func (ialu *IPAddressLogUpdate) SetPostID(id int) *IPAddressLogUpdate {
+	ialu.mutation.SetPostID(id)
 	return ialu
 }
 
-// SetPostID sets the "post_id" edge to the Post entity.
-func (ialu *IPAddressLogUpdate) SetPostID(p *Post) *IPAddressLogUpdate {
-	return ialu.SetPostIDID(p.ID)
+// SetPost sets the "post" edge to the Post entity.
+func (ialu *IPAddressLogUpdate) SetPost(p *Post) *IPAddressLogUpdate {
+	return ialu.SetPostID(p.ID)
 }
 
 // Mutation returns the IPAddressLogMutation object of the builder.
@@ -57,9 +57,9 @@ func (ialu *IPAddressLogUpdate) Mutation() *IPAddressLogMutation {
 	return ialu.mutation
 }
 
-// ClearPostID clears the "post_id" edge to the Post entity.
-func (ialu *IPAddressLogUpdate) ClearPostID() *IPAddressLogUpdate {
-	ialu.mutation.ClearPostID()
+// ClearPost clears the "post" edge to the Post entity.
+func (ialu *IPAddressLogUpdate) ClearPost() *IPAddressLogUpdate {
+	ialu.mutation.ClearPost()
 	return ialu
 }
 
@@ -106,8 +106,8 @@ func (ialu *IPAddressLogUpdate) check() error {
 			return &ValidationError{Name: "ip_address", err: fmt.Errorf(`ent: validator failed for field "IPAddressLog.ip_address": %w`, err)}
 		}
 	}
-	if _, ok := ialu.mutation.PostIDID(); ialu.mutation.PostIDCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "IPAddressLog.post_id"`)
+	if _, ok := ialu.mutation.PostID(); ialu.mutation.PostCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "IPAddressLog.post"`)
 	}
 	return nil
 }
@@ -116,7 +116,7 @@ func (ialu *IPAddressLogUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	if err := ialu.check(); err != nil {
 		return n, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(ipaddresslog.Table, ipaddresslog.Columns, sqlgraph.NewFieldSpec(ipaddresslog.FieldID, field.TypeString))
+	_spec := sqlgraph.NewUpdateSpec(ipaddresslog.Table, ipaddresslog.Columns, sqlgraph.NewFieldSpec(ipaddresslog.FieldID, field.TypeInt))
 	if ps := ialu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -130,32 +130,32 @@ func (ialu *IPAddressLogUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	if value, ok := ialu.mutation.UpdatedAt(); ok {
 		_spec.SetField(ipaddresslog.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if ialu.mutation.PostIDCleared() {
+	if ialu.mutation.PostCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   ipaddresslog.PostIDTable,
-			Columns: []string{ipaddresslog.PostIDColumn},
+			Table:   ipaddresslog.PostTable,
+			Columns: []string{ipaddresslog.PostColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt,
 					Column: post.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ialu.mutation.PostIDIDs(); len(nodes) > 0 {
+	if nodes := ialu.mutation.PostIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   ipaddresslog.PostIDTable,
-			Columns: []string{ipaddresslog.PostIDColumn},
+			Table:   ipaddresslog.PostTable,
+			Columns: []string{ipaddresslog.PostColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt,
 					Column: post.FieldID,
 				},
 			},
@@ -197,15 +197,15 @@ func (ialuo *IPAddressLogUpdateOne) SetUpdatedAt(t time.Time) *IPAddressLogUpdat
 	return ialuo
 }
 
-// SetPostIDID sets the "post_id" edge to the Post entity by ID.
-func (ialuo *IPAddressLogUpdateOne) SetPostIDID(id string) *IPAddressLogUpdateOne {
-	ialuo.mutation.SetPostIDID(id)
+// SetPostID sets the "post" edge to the Post entity by ID.
+func (ialuo *IPAddressLogUpdateOne) SetPostID(id int) *IPAddressLogUpdateOne {
+	ialuo.mutation.SetPostID(id)
 	return ialuo
 }
 
-// SetPostID sets the "post_id" edge to the Post entity.
-func (ialuo *IPAddressLogUpdateOne) SetPostID(p *Post) *IPAddressLogUpdateOne {
-	return ialuo.SetPostIDID(p.ID)
+// SetPost sets the "post" edge to the Post entity.
+func (ialuo *IPAddressLogUpdateOne) SetPost(p *Post) *IPAddressLogUpdateOne {
+	return ialuo.SetPostID(p.ID)
 }
 
 // Mutation returns the IPAddressLogMutation object of the builder.
@@ -213,9 +213,9 @@ func (ialuo *IPAddressLogUpdateOne) Mutation() *IPAddressLogMutation {
 	return ialuo.mutation
 }
 
-// ClearPostID clears the "post_id" edge to the Post entity.
-func (ialuo *IPAddressLogUpdateOne) ClearPostID() *IPAddressLogUpdateOne {
-	ialuo.mutation.ClearPostID()
+// ClearPost clears the "post" edge to the Post entity.
+func (ialuo *IPAddressLogUpdateOne) ClearPost() *IPAddressLogUpdateOne {
+	ialuo.mutation.ClearPost()
 	return ialuo
 }
 
@@ -275,8 +275,8 @@ func (ialuo *IPAddressLogUpdateOne) check() error {
 			return &ValidationError{Name: "ip_address", err: fmt.Errorf(`ent: validator failed for field "IPAddressLog.ip_address": %w`, err)}
 		}
 	}
-	if _, ok := ialuo.mutation.PostIDID(); ialuo.mutation.PostIDCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "IPAddressLog.post_id"`)
+	if _, ok := ialuo.mutation.PostID(); ialuo.mutation.PostCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "IPAddressLog.post"`)
 	}
 	return nil
 }
@@ -285,7 +285,7 @@ func (ialuo *IPAddressLogUpdateOne) sqlSave(ctx context.Context) (_node *IPAddre
 	if err := ialuo.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(ipaddresslog.Table, ipaddresslog.Columns, sqlgraph.NewFieldSpec(ipaddresslog.FieldID, field.TypeString))
+	_spec := sqlgraph.NewUpdateSpec(ipaddresslog.Table, ipaddresslog.Columns, sqlgraph.NewFieldSpec(ipaddresslog.FieldID, field.TypeInt))
 	id, ok := ialuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "IPAddressLog.id" for update`)}
@@ -316,32 +316,32 @@ func (ialuo *IPAddressLogUpdateOne) sqlSave(ctx context.Context) (_node *IPAddre
 	if value, ok := ialuo.mutation.UpdatedAt(); ok {
 		_spec.SetField(ipaddresslog.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if ialuo.mutation.PostIDCleared() {
+	if ialuo.mutation.PostCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   ipaddresslog.PostIDTable,
-			Columns: []string{ipaddresslog.PostIDColumn},
+			Table:   ipaddresslog.PostTable,
+			Columns: []string{ipaddresslog.PostColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt,
 					Column: post.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ialuo.mutation.PostIDIDs(); len(nodes) > 0 {
+	if nodes := ialuo.mutation.PostIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   ipaddresslog.PostIDTable,
-			Columns: []string{ipaddresslog.PostIDColumn},
+			Table:   ipaddresslog.PostTable,
+			Columns: []string{ipaddresslog.PostColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt,
 					Column: post.FieldID,
 				},
 			},

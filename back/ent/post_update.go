@@ -155,14 +155,14 @@ func (pu *PostUpdate) SetUpdatedAt(t time.Time) *PostUpdate {
 }
 
 // AddIPAddressLogIDs adds the "ip_address_log" edge to the IPAddressLog entity by IDs.
-func (pu *PostUpdate) AddIPAddressLogIDs(ids ...string) *PostUpdate {
+func (pu *PostUpdate) AddIPAddressLogIDs(ids ...int) *PostUpdate {
 	pu.mutation.AddIPAddressLogIDs(ids...)
 	return pu
 }
 
 // AddIPAddressLog adds the "ip_address_log" edges to the IPAddressLog entity.
 func (pu *PostUpdate) AddIPAddressLog(i ...*IPAddressLog) *PostUpdate {
-	ids := make([]string, len(i))
+	ids := make([]int, len(i))
 	for j := range i {
 		ids[j] = i[j].ID
 	}
@@ -181,14 +181,14 @@ func (pu *PostUpdate) ClearIPAddressLog() *PostUpdate {
 }
 
 // RemoveIPAddressLogIDs removes the "ip_address_log" edge to IPAddressLog entities by IDs.
-func (pu *PostUpdate) RemoveIPAddressLogIDs(ids ...string) *PostUpdate {
+func (pu *PostUpdate) RemoveIPAddressLogIDs(ids ...int) *PostUpdate {
 	pu.mutation.RemoveIPAddressLogIDs(ids...)
 	return pu
 }
 
 // RemoveIPAddressLog removes "ip_address_log" edges to IPAddressLog entities.
 func (pu *PostUpdate) RemoveIPAddressLog(i ...*IPAddressLog) *PostUpdate {
-	ids := make([]string, len(i))
+	ids := make([]int, len(i))
 	for j := range i {
 		ids[j] = i[j].ID
 	}
@@ -260,7 +260,7 @@ func (pu *PostUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := pu.check(); err != nil {
 		return n, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(post.Table, post.Columns, sqlgraph.NewFieldSpec(post.FieldID, field.TypeString))
+	_spec := sqlgraph.NewUpdateSpec(post.Table, post.Columns, sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt))
 	if ps := pu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -319,7 +319,7 @@ func (pu *PostUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt,
 					Column: ipaddresslog.FieldID,
 				},
 			},
@@ -335,7 +335,7 @@ func (pu *PostUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt,
 					Column: ipaddresslog.FieldID,
 				},
 			},
@@ -354,7 +354,7 @@ func (pu *PostUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt,
 					Column: ipaddresslog.FieldID,
 				},
 			},
@@ -510,14 +510,14 @@ func (puo *PostUpdateOne) SetUpdatedAt(t time.Time) *PostUpdateOne {
 }
 
 // AddIPAddressLogIDs adds the "ip_address_log" edge to the IPAddressLog entity by IDs.
-func (puo *PostUpdateOne) AddIPAddressLogIDs(ids ...string) *PostUpdateOne {
+func (puo *PostUpdateOne) AddIPAddressLogIDs(ids ...int) *PostUpdateOne {
 	puo.mutation.AddIPAddressLogIDs(ids...)
 	return puo
 }
 
 // AddIPAddressLog adds the "ip_address_log" edges to the IPAddressLog entity.
 func (puo *PostUpdateOne) AddIPAddressLog(i ...*IPAddressLog) *PostUpdateOne {
-	ids := make([]string, len(i))
+	ids := make([]int, len(i))
 	for j := range i {
 		ids[j] = i[j].ID
 	}
@@ -536,14 +536,14 @@ func (puo *PostUpdateOne) ClearIPAddressLog() *PostUpdateOne {
 }
 
 // RemoveIPAddressLogIDs removes the "ip_address_log" edge to IPAddressLog entities by IDs.
-func (puo *PostUpdateOne) RemoveIPAddressLogIDs(ids ...string) *PostUpdateOne {
+func (puo *PostUpdateOne) RemoveIPAddressLogIDs(ids ...int) *PostUpdateOne {
 	puo.mutation.RemoveIPAddressLogIDs(ids...)
 	return puo
 }
 
 // RemoveIPAddressLog removes "ip_address_log" edges to IPAddressLog entities.
 func (puo *PostUpdateOne) RemoveIPAddressLog(i ...*IPAddressLog) *PostUpdateOne {
-	ids := make([]string, len(i))
+	ids := make([]int, len(i))
 	for j := range i {
 		ids[j] = i[j].ID
 	}
@@ -628,7 +628,7 @@ func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) 
 	if err := puo.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(post.Table, post.Columns, sqlgraph.NewFieldSpec(post.FieldID, field.TypeString))
+	_spec := sqlgraph.NewUpdateSpec(post.Table, post.Columns, sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt))
 	id, ok := puo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Post.id" for update`)}
@@ -704,7 +704,7 @@ func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt,
 					Column: ipaddresslog.FieldID,
 				},
 			},
@@ -720,7 +720,7 @@ func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt,
 					Column: ipaddresslog.FieldID,
 				},
 			},
@@ -739,7 +739,7 @@ func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt,
 					Column: ipaddresslog.FieldID,
 				},
 			},

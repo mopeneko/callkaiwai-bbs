@@ -8,7 +8,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/go-ozzo/ozzo-validation/is"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/rs/xid"
 )
 
 // IPAddressLog holds the schema definition for the IPAddressLog entity.
@@ -19,10 +18,6 @@ type IPAddressLog struct {
 // Fields of the IPAddressLog.
 func (IPAddressLog) Fields() []ent.Field {
 	return []ent.Field{
-		field.Text("id").
-			DefaultFunc(func() string {
-				return xid.New().String()
-			}),
 		field.Text("ip_address").Validate(func(s string) error {
 			return validation.Validate(s, is.IP)
 		}),
@@ -34,7 +29,7 @@ func (IPAddressLog) Fields() []ent.Field {
 // Edges of the IPAddressLog.
 func (IPAddressLog) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("post_id", Post.Type).
+		edge.From("post", Post.Type).
 			Ref("ip_address_log").
 			Unique().
 			Required(),

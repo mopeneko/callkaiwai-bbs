@@ -33,18 +33,18 @@ const (
 // IPAddressLogMutation represents an operation that mutates the IPAddressLog nodes in the graph.
 type IPAddressLogMutation struct {
 	config
-	op             Op
-	typ            string
-	id             *string
-	ip_address     *string
-	created_at     *time.Time
-	updated_at     *time.Time
-	clearedFields  map[string]struct{}
-	post_id        *string
-	clearedpost_id bool
-	done           bool
-	oldValue       func(context.Context) (*IPAddressLog, error)
-	predicates     []predicate.IPAddressLog
+	op            Op
+	typ           string
+	id            *int
+	ip_address    *string
+	created_at    *time.Time
+	updated_at    *time.Time
+	clearedFields map[string]struct{}
+	post          *int
+	clearedpost   bool
+	done          bool
+	oldValue      func(context.Context) (*IPAddressLog, error)
+	predicates    []predicate.IPAddressLog
 }
 
 var _ ent.Mutation = (*IPAddressLogMutation)(nil)
@@ -67,7 +67,7 @@ func newIPAddressLogMutation(c config, op Op, opts ...ipaddresslogOption) *IPAdd
 }
 
 // withIPAddressLogID sets the ID field of the mutation.
-func withIPAddressLogID(id string) ipaddresslogOption {
+func withIPAddressLogID(id int) ipaddresslogOption {
 	return func(m *IPAddressLogMutation) {
 		var (
 			err   error
@@ -117,15 +117,9 @@ func (m IPAddressLogMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
-// SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of IPAddressLog entities.
-func (m *IPAddressLogMutation) SetID(id string) {
-	m.id = &id
-}
-
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *IPAddressLogMutation) ID() (id string, exists bool) {
+func (m *IPAddressLogMutation) ID() (id int, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -136,12 +130,12 @@ func (m *IPAddressLogMutation) ID() (id string, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *IPAddressLogMutation) IDs(ctx context.Context) ([]string, error) {
+func (m *IPAddressLogMutation) IDs(ctx context.Context) ([]int, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []string{id}, nil
+			return []int{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -259,43 +253,43 @@ func (m *IPAddressLogMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
-// SetPostIDID sets the "post_id" edge to the Post entity by id.
-func (m *IPAddressLogMutation) SetPostIDID(id string) {
-	m.post_id = &id
+// SetPostID sets the "post" edge to the Post entity by id.
+func (m *IPAddressLogMutation) SetPostID(id int) {
+	m.post = &id
 }
 
-// ClearPostID clears the "post_id" edge to the Post entity.
-func (m *IPAddressLogMutation) ClearPostID() {
-	m.clearedpost_id = true
+// ClearPost clears the "post" edge to the Post entity.
+func (m *IPAddressLogMutation) ClearPost() {
+	m.clearedpost = true
 }
 
-// PostIDCleared reports if the "post_id" edge to the Post entity was cleared.
-func (m *IPAddressLogMutation) PostIDCleared() bool {
-	return m.clearedpost_id
+// PostCleared reports if the "post" edge to the Post entity was cleared.
+func (m *IPAddressLogMutation) PostCleared() bool {
+	return m.clearedpost
 }
 
-// PostIDID returns the "post_id" edge ID in the mutation.
-func (m *IPAddressLogMutation) PostIDID() (id string, exists bool) {
-	if m.post_id != nil {
-		return *m.post_id, true
+// PostID returns the "post" edge ID in the mutation.
+func (m *IPAddressLogMutation) PostID() (id int, exists bool) {
+	if m.post != nil {
+		return *m.post, true
 	}
 	return
 }
 
-// PostIDIDs returns the "post_id" edge IDs in the mutation.
+// PostIDs returns the "post" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// PostIDID instead. It exists only for internal usage by the builders.
-func (m *IPAddressLogMutation) PostIDIDs() (ids []string) {
-	if id := m.post_id; id != nil {
+// PostID instead. It exists only for internal usage by the builders.
+func (m *IPAddressLogMutation) PostIDs() (ids []int) {
+	if id := m.post; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetPostID resets all changes to the "post_id" edge.
-func (m *IPAddressLogMutation) ResetPostID() {
-	m.post_id = nil
-	m.clearedpost_id = false
+// ResetPost resets all changes to the "post" edge.
+func (m *IPAddressLogMutation) ResetPost() {
+	m.post = nil
+	m.clearedpost = false
 }
 
 // Where appends a list predicates to the IPAddressLogMutation builder.
@@ -466,8 +460,8 @@ func (m *IPAddressLogMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *IPAddressLogMutation) AddedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.post_id != nil {
-		edges = append(edges, ipaddresslog.EdgePostID)
+	if m.post != nil {
+		edges = append(edges, ipaddresslog.EdgePost)
 	}
 	return edges
 }
@@ -476,8 +470,8 @@ func (m *IPAddressLogMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *IPAddressLogMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case ipaddresslog.EdgePostID:
-		if id := m.post_id; id != nil {
+	case ipaddresslog.EdgePost:
+		if id := m.post; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -499,8 +493,8 @@ func (m *IPAddressLogMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *IPAddressLogMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.clearedpost_id {
-		edges = append(edges, ipaddresslog.EdgePostID)
+	if m.clearedpost {
+		edges = append(edges, ipaddresslog.EdgePost)
 	}
 	return edges
 }
@@ -509,8 +503,8 @@ func (m *IPAddressLogMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *IPAddressLogMutation) EdgeCleared(name string) bool {
 	switch name {
-	case ipaddresslog.EdgePostID:
-		return m.clearedpost_id
+	case ipaddresslog.EdgePost:
+		return m.clearedpost
 	}
 	return false
 }
@@ -519,8 +513,8 @@ func (m *IPAddressLogMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *IPAddressLogMutation) ClearEdge(name string) error {
 	switch name {
-	case ipaddresslog.EdgePostID:
-		m.ClearPostID()
+	case ipaddresslog.EdgePost:
+		m.ClearPost()
 		return nil
 	}
 	return fmt.Errorf("unknown IPAddressLog unique edge %s", name)
@@ -530,8 +524,8 @@ func (m *IPAddressLogMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *IPAddressLogMutation) ResetEdge(name string) error {
 	switch name {
-	case ipaddresslog.EdgePostID:
-		m.ResetPostID()
+	case ipaddresslog.EdgePost:
+		m.ResetPost()
 		return nil
 	}
 	return fmt.Errorf("unknown IPAddressLog edge %s", name)
@@ -542,7 +536,7 @@ type PostMutation struct {
 	config
 	op                    Op
 	typ                   string
-	id                    *string
+	id                    *int
 	name                  *string
 	gender                *int
 	addgender             *int
@@ -554,8 +548,8 @@ type PostMutation struct {
 	created_at            *time.Time
 	updated_at            *time.Time
 	clearedFields         map[string]struct{}
-	ip_address_log        map[string]struct{}
-	removedip_address_log map[string]struct{}
+	ip_address_log        map[int]struct{}
+	removedip_address_log map[int]struct{}
 	clearedip_address_log bool
 	done                  bool
 	oldValue              func(context.Context) (*Post, error)
@@ -582,7 +576,7 @@ func newPostMutation(c config, op Op, opts ...postOption) *PostMutation {
 }
 
 // withPostID sets the ID field of the mutation.
-func withPostID(id string) postOption {
+func withPostID(id int) postOption {
 	return func(m *PostMutation) {
 		var (
 			err   error
@@ -632,15 +626,9 @@ func (m PostMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
-// SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of Post entities.
-func (m *PostMutation) SetID(id string) {
-	m.id = &id
-}
-
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *PostMutation) ID() (id string, exists bool) {
+func (m *PostMutation) ID() (id int, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -651,12 +639,12 @@ func (m *PostMutation) ID() (id string, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *PostMutation) IDs(ctx context.Context) ([]string, error) {
+func (m *PostMutation) IDs(ctx context.Context) ([]int, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []string{id}, nil
+			return []int{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -1076,9 +1064,9 @@ func (m *PostMutation) ResetUpdatedAt() {
 }
 
 // AddIPAddressLogIDs adds the "ip_address_log" edge to the IPAddressLog entity by ids.
-func (m *PostMutation) AddIPAddressLogIDs(ids ...string) {
+func (m *PostMutation) AddIPAddressLogIDs(ids ...int) {
 	if m.ip_address_log == nil {
-		m.ip_address_log = make(map[string]struct{})
+		m.ip_address_log = make(map[int]struct{})
 	}
 	for i := range ids {
 		m.ip_address_log[ids[i]] = struct{}{}
@@ -1096,9 +1084,9 @@ func (m *PostMutation) IPAddressLogCleared() bool {
 }
 
 // RemoveIPAddressLogIDs removes the "ip_address_log" edge to the IPAddressLog entity by IDs.
-func (m *PostMutation) RemoveIPAddressLogIDs(ids ...string) {
+func (m *PostMutation) RemoveIPAddressLogIDs(ids ...int) {
 	if m.removedip_address_log == nil {
-		m.removedip_address_log = make(map[string]struct{})
+		m.removedip_address_log = make(map[int]struct{})
 	}
 	for i := range ids {
 		delete(m.ip_address_log, ids[i])
@@ -1107,7 +1095,7 @@ func (m *PostMutation) RemoveIPAddressLogIDs(ids ...string) {
 }
 
 // RemovedIPAddressLog returns the removed IDs of the "ip_address_log" edge to the IPAddressLog entity.
-func (m *PostMutation) RemovedIPAddressLogIDs() (ids []string) {
+func (m *PostMutation) RemovedIPAddressLogIDs() (ids []int) {
 	for id := range m.removedip_address_log {
 		ids = append(ids, id)
 	}
@@ -1115,7 +1103,7 @@ func (m *PostMutation) RemovedIPAddressLogIDs() (ids []string) {
 }
 
 // IPAddressLogIDs returns the "ip_address_log" edge IDs in the mutation.
-func (m *PostMutation) IPAddressLogIDs() (ids []string) {
+func (m *PostMutation) IPAddressLogIDs() (ids []int) {
 	for id := range m.ip_address_log {
 		ids = append(ids, id)
 	}

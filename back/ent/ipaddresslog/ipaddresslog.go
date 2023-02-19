@@ -17,17 +17,17 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
-	// EdgePostID holds the string denoting the post_id edge name in mutations.
-	EdgePostID = "post_id"
+	// EdgePost holds the string denoting the post edge name in mutations.
+	EdgePost = "post"
 	// Table holds the table name of the ipaddresslog in the database.
 	Table = "ip_address_logs"
-	// PostIDTable is the table that holds the post_id relation/edge.
-	PostIDTable = "ip_address_logs"
-	// PostIDInverseTable is the table name for the Post entity.
+	// PostTable is the table that holds the post relation/edge.
+	PostTable = "ip_address_logs"
+	// PostInverseTable is the table name for the Post entity.
 	// It exists in this package in order to avoid circular dependency with the "post" package.
-	PostIDInverseTable = "posts"
-	// PostIDColumn is the table column denoting the post_id relation/edge.
-	PostIDColumn = "post_ip_address_log"
+	PostInverseTable = "posts"
+	// PostColumn is the table column denoting the post relation/edge.
+	PostColumn = "post_ip_address_log"
 )
 
 // Columns holds all SQL columns for ipaddresslog fields.
@@ -68,6 +68,4 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
-	// DefaultID holds the default value on creation for the "id" field.
-	DefaultID func() string
 )

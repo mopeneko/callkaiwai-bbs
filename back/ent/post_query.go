@@ -106,8 +106,8 @@ func (pq *PostQuery) FirstX(ctx context.Context) *Post {
 
 // FirstID returns the first Post ID from the query.
 // Returns a *NotFoundError when no Post ID was found.
-func (pq *PostQuery) FirstID(ctx context.Context) (id string, err error) {
-	var ids []string
+func (pq *PostQuery) FirstID(ctx context.Context) (id int, err error) {
+	var ids []int
 	if ids, err = pq.Limit(1).IDs(setContextOp(ctx, pq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -119,7 +119,7 @@ func (pq *PostQuery) FirstID(ctx context.Context) (id string, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (pq *PostQuery) FirstIDX(ctx context.Context) string {
+func (pq *PostQuery) FirstIDX(ctx context.Context) int {
 	id, err := pq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -157,8 +157,8 @@ func (pq *PostQuery) OnlyX(ctx context.Context) *Post {
 // OnlyID is like Only, but returns the only Post ID in the query.
 // Returns a *NotSingularError when more than one Post ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (pq *PostQuery) OnlyID(ctx context.Context) (id string, err error) {
-	var ids []string
+func (pq *PostQuery) OnlyID(ctx context.Context) (id int, err error) {
+	var ids []int
 	if ids, err = pq.Limit(2).IDs(setContextOp(ctx, pq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -174,7 +174,7 @@ func (pq *PostQuery) OnlyID(ctx context.Context) (id string, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (pq *PostQuery) OnlyIDX(ctx context.Context) string {
+func (pq *PostQuery) OnlyIDX(ctx context.Context) int {
 	id, err := pq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -202,7 +202,7 @@ func (pq *PostQuery) AllX(ctx context.Context) []*Post {
 }
 
 // IDs executes the query and returns a list of Post IDs.
-func (pq *PostQuery) IDs(ctx context.Context) (ids []string, err error) {
+func (pq *PostQuery) IDs(ctx context.Context) (ids []int, err error) {
 	if pq.ctx.Unique == nil && pq.path != nil {
 		pq.Unique(true)
 	}
@@ -214,7 +214,7 @@ func (pq *PostQuery) IDs(ctx context.Context) (ids []string, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (pq *PostQuery) IDsX(ctx context.Context) []string {
+func (pq *PostQuery) IDsX(ctx context.Context) []int {
 	ids, err := pq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -406,7 +406,7 @@ func (pq *PostQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Post, e
 
 func (pq *PostQuery) loadIPAddressLog(ctx context.Context, query *IPAddressLogQuery, nodes []*Post, init func(*Post), assign func(*Post, *IPAddressLog)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[string]*Post)
+	nodeids := make(map[int]*Post)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -446,7 +446,7 @@ func (pq *PostQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (pq *PostQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(post.Table, post.Columns, sqlgraph.NewFieldSpec(post.FieldID, field.TypeString))
+	_spec := sqlgraph.NewQuerySpec(post.Table, post.Columns, sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt))
 	_spec.From = pq.sql
 	if unique := pq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

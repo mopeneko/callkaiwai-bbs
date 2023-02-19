@@ -131,29 +131,15 @@ func (pc *PostCreate) SetNillableUpdatedAt(t *time.Time) *PostCreate {
 	return pc
 }
 
-// SetID sets the "id" field.
-func (pc *PostCreate) SetID(s string) *PostCreate {
-	pc.mutation.SetID(s)
-	return pc
-}
-
-// SetNillableID sets the "id" field if the given value is not nil.
-func (pc *PostCreate) SetNillableID(s *string) *PostCreate {
-	if s != nil {
-		pc.SetID(*s)
-	}
-	return pc
-}
-
 // AddIPAddressLogIDs adds the "ip_address_log" edge to the IPAddressLog entity by IDs.
-func (pc *PostCreate) AddIPAddressLogIDs(ids ...string) *PostCreate {
+func (pc *PostCreate) AddIPAddressLogIDs(ids ...int) *PostCreate {
 	pc.mutation.AddIPAddressLogIDs(ids...)
 	return pc
 }
 
 // AddIPAddressLog adds the "ip_address_log" edges to the IPAddressLog entity.
 func (pc *PostCreate) AddIPAddressLog(i ...*IPAddressLog) *PostCreate {
-	ids := make([]string, len(i))
+	ids := make([]int, len(i))
 	for j := range i {
 		ids[j] = i[j].ID
 	}
@@ -202,10 +188,6 @@ func (pc *PostCreate) defaults() {
 	if _, ok := pc.mutation.UpdatedAt(); !ok {
 		v := post.DefaultUpdatedAt()
 		pc.mutation.SetUpdatedAt(v)
-	}
-	if _, ok := pc.mutation.ID(); !ok {
-		v := post.DefaultID()
-		pc.mutation.SetID(v)
 	}
 }
 
@@ -257,13 +239,8 @@ func (pc *PostCreate) sqlSave(ctx context.Context) (*Post, error) {
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(string); ok {
-			_node.ID = id
-		} else {
-			return nil, fmt.Errorf("unexpected Post.ID type: %T", _spec.ID.Value)
-		}
-	}
+	id := _spec.ID.Value.(int64)
+	_node.ID = int(id)
 	pc.mutation.id = &_node.ID
 	pc.mutation.done = true
 	return _node, nil
@@ -272,12 +249,8 @@ func (pc *PostCreate) sqlSave(ctx context.Context) (*Post, error) {
 func (pc *PostCreate) createSpec() (*Post, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Post{config: pc.config}
-		_spec = sqlgraph.NewCreateSpec(post.Table, sqlgraph.NewFieldSpec(post.FieldID, field.TypeString))
+		_spec = sqlgraph.NewCreateSpec(post.Table, sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt))
 	)
-	if id, ok := pc.mutation.ID(); ok {
-		_node.ID = id
-		_spec.ID.Value = id
-	}
 	if value, ok := pc.mutation.Name(); ok {
 		_spec.SetField(post.FieldName, field.TypeString, value)
 		_node.Name = value
@@ -323,7 +296,7 @@ func (pc *PostCreate) createSpec() (*Post, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt,
 					Column: ipaddresslog.FieldID,
 				},
 			},
@@ -377,6 +350,10 @@ func (pcb *PostCreateBulk) Save(ctx context.Context) ([]*Post, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
+				if specs[i].ID.Value != nil {
+					id := specs[i].ID.Value.(int64)
+					nodes[i].ID = int(id)
+				}
 				mutation.done = true
 				return nodes[i], nil
 			})

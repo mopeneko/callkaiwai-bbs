@@ -22,7 +22,7 @@ type IPAddressLogQuery struct {
 	order      []OrderFunc
 	inters     []Interceptor
 	predicates []predicate.IPAddressLog
-	withPostID *PostQuery
+	withPost   *PostQuery
 	withFKs    bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -60,8 +60,8 @@ func (ialq *IPAddressLogQuery) Order(o ...OrderFunc) *IPAddressLogQuery {
 	return ialq
 }
 
-// QueryPostID chains the current query on the "post_id" edge.
-func (ialq *IPAddressLogQuery) QueryPostID() *PostQuery {
+// QueryPost chains the current query on the "post" edge.
+func (ialq *IPAddressLogQuery) QueryPost() *PostQuery {
 	query := (&PostClient{config: ialq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := ialq.prepareQuery(ctx); err != nil {
@@ -74,7 +74,7 @@ func (ialq *IPAddressLogQuery) QueryPostID() *PostQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(ipaddresslog.Table, ipaddresslog.FieldID, selector),
 			sqlgraph.To(post.Table, post.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ipaddresslog.PostIDTable, ipaddresslog.PostIDColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, ipaddresslog.PostTable, ipaddresslog.PostColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(ialq.driver.Dialect(), step)
 		return fromU, nil
@@ -106,8 +106,8 @@ func (ialq *IPAddressLogQuery) FirstX(ctx context.Context) *IPAddressLog {
 
 // FirstID returns the first IPAddressLog ID from the query.
 // Returns a *NotFoundError when no IPAddressLog ID was found.
-func (ialq *IPAddressLogQuery) FirstID(ctx context.Context) (id string, err error) {
-	var ids []string
+func (ialq *IPAddressLogQuery) FirstID(ctx context.Context) (id int, err error) {
+	var ids []int
 	if ids, err = ialq.Limit(1).IDs(setContextOp(ctx, ialq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -119,7 +119,7 @@ func (ialq *IPAddressLogQuery) FirstID(ctx context.Context) (id string, err erro
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (ialq *IPAddressLogQuery) FirstIDX(ctx context.Context) string {
+func (ialq *IPAddressLogQuery) FirstIDX(ctx context.Context) int {
 	id, err := ialq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -157,8 +157,8 @@ func (ialq *IPAddressLogQuery) OnlyX(ctx context.Context) *IPAddressLog {
 // OnlyID is like Only, but returns the only IPAddressLog ID in the query.
 // Returns a *NotSingularError when more than one IPAddressLog ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (ialq *IPAddressLogQuery) OnlyID(ctx context.Context) (id string, err error) {
-	var ids []string
+func (ialq *IPAddressLogQuery) OnlyID(ctx context.Context) (id int, err error) {
+	var ids []int
 	if ids, err = ialq.Limit(2).IDs(setContextOp(ctx, ialq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -174,7 +174,7 @@ func (ialq *IPAddressLogQuery) OnlyID(ctx context.Context) (id string, err error
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (ialq *IPAddressLogQuery) OnlyIDX(ctx context.Context) string {
+func (ialq *IPAddressLogQuery) OnlyIDX(ctx context.Context) int {
 	id, err := ialq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -202,7 +202,7 @@ func (ialq *IPAddressLogQuery) AllX(ctx context.Context) []*IPAddressLog {
 }
 
 // IDs executes the query and returns a list of IPAddressLog IDs.
-func (ialq *IPAddressLogQuery) IDs(ctx context.Context) (ids []string, err error) {
+func (ialq *IPAddressLogQuery) IDs(ctx context.Context) (ids []int, err error) {
 	if ialq.ctx.Unique == nil && ialq.path != nil {
 		ialq.Unique(true)
 	}
@@ -214,7 +214,7 @@ func (ialq *IPAddressLogQuery) IDs(ctx context.Context) (ids []string, err error
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (ialq *IPAddressLogQuery) IDsX(ctx context.Context) []string {
+func (ialq *IPAddressLogQuery) IDsX(ctx context.Context) []int {
 	ids, err := ialq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -274,21 +274,21 @@ func (ialq *IPAddressLogQuery) Clone() *IPAddressLogQuery {
 		order:      append([]OrderFunc{}, ialq.order...),
 		inters:     append([]Interceptor{}, ialq.inters...),
 		predicates: append([]predicate.IPAddressLog{}, ialq.predicates...),
-		withPostID: ialq.withPostID.Clone(),
+		withPost:   ialq.withPost.Clone(),
 		// clone intermediate query.
 		sql:  ialq.sql.Clone(),
 		path: ialq.path,
 	}
 }
 
-// WithPostID tells the query-builder to eager-load the nodes that are connected to
-// the "post_id" edge. The optional arguments are used to configure the query builder of the edge.
-func (ialq *IPAddressLogQuery) WithPostID(opts ...func(*PostQuery)) *IPAddressLogQuery {
+// WithPost tells the query-builder to eager-load the nodes that are connected to
+// the "post" edge. The optional arguments are used to configure the query builder of the edge.
+func (ialq *IPAddressLogQuery) WithPost(opts ...func(*PostQuery)) *IPAddressLogQuery {
 	query := (&PostClient{config: ialq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	ialq.withPostID = query
+	ialq.withPost = query
 	return ialq
 }
 
@@ -374,10 +374,10 @@ func (ialq *IPAddressLogQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 		withFKs     = ialq.withFKs
 		_spec       = ialq.querySpec()
 		loadedTypes = [1]bool{
-			ialq.withPostID != nil,
+			ialq.withPost != nil,
 		}
 	)
-	if ialq.withPostID != nil {
+	if ialq.withPost != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -401,18 +401,18 @@ func (ialq *IPAddressLogQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := ialq.withPostID; query != nil {
-		if err := ialq.loadPostID(ctx, query, nodes, nil,
-			func(n *IPAddressLog, e *Post) { n.Edges.PostID = e }); err != nil {
+	if query := ialq.withPost; query != nil {
+		if err := ialq.loadPost(ctx, query, nodes, nil,
+			func(n *IPAddressLog, e *Post) { n.Edges.Post = e }); err != nil {
 			return nil, err
 		}
 	}
 	return nodes, nil
 }
 
-func (ialq *IPAddressLogQuery) loadPostID(ctx context.Context, query *PostQuery, nodes []*IPAddressLog, init func(*IPAddressLog), assign func(*IPAddressLog, *Post)) error {
-	ids := make([]string, 0, len(nodes))
-	nodeids := make(map[string][]*IPAddressLog)
+func (ialq *IPAddressLogQuery) loadPost(ctx context.Context, query *PostQuery, nodes []*IPAddressLog, init func(*IPAddressLog), assign func(*IPAddressLog, *Post)) error {
+	ids := make([]int, 0, len(nodes))
+	nodeids := make(map[int][]*IPAddressLog)
 	for i := range nodes {
 		if nodes[i].post_ip_address_log == nil {
 			continue
@@ -453,7 +453,7 @@ func (ialq *IPAddressLogQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (ialq *IPAddressLogQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(ipaddresslog.Table, ipaddresslog.Columns, sqlgraph.NewFieldSpec(ipaddresslog.FieldID, field.TypeString))
+	_spec := sqlgraph.NewQuerySpec(ipaddresslog.Table, ipaddresslog.Columns, sqlgraph.NewFieldSpec(ipaddresslog.FieldID, field.TypeInt))
 	_spec.From = ialq.sql
 	if unique := ialq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

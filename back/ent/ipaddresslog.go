@@ -16,7 +16,7 @@ import (
 type IPAddressLog struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID string `json:"id,omitempty"`
+	ID int `json:"id,omitempty"`
 	// IPAddress holds the value of the "ip_address" field.
 	IPAddress string `json:"ip_address,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -26,29 +26,29 @@ type IPAddressLog struct {
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the IPAddressLogQuery when eager-loading is set.
 	Edges               IPAddressLogEdges `json:"edges"`
-	post_ip_address_log *string
+	post_ip_address_log *int
 }
 
 // IPAddressLogEdges holds the relations/edges for other nodes in the graph.
 type IPAddressLogEdges struct {
-	// PostID holds the value of the post_id edge.
-	PostID *Post `json:"post_id,omitempty"`
+	// Post holds the value of the post edge.
+	Post *Post `json:"post,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
 }
 
-// PostIDOrErr returns the PostID value or an error if the edge
+// PostOrErr returns the Post value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e IPAddressLogEdges) PostIDOrErr() (*Post, error) {
+func (e IPAddressLogEdges) PostOrErr() (*Post, error) {
 	if e.loadedTypes[0] {
-		if e.PostID == nil {
+		if e.Post == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: post.Label}
 		}
-		return e.PostID, nil
+		return e.Post, nil
 	}
-	return nil, &NotLoadedError{edge: "post_id"}
+	return nil, &NotLoadedError{edge: "post"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -56,12 +56,14 @@ func (*IPAddressLog) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case ipaddresslog.FieldID, ipaddresslog.FieldIPAddress:
+		case ipaddresslog.FieldID:
+			values[i] = new(sql.NullInt64)
+		case ipaddresslog.FieldIPAddress:
 			values[i] = new(sql.NullString)
 		case ipaddresslog.FieldCreatedAt, ipaddresslog.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		case ipaddresslog.ForeignKeys[0]: // post_ip_address_log
-			values[i] = new(sql.NullString)
+			values[i] = new(sql.NullInt64)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type IPAddressLog", columns[i])
 		}
@@ -78,11 +80,11 @@ func (ial *IPAddressLog) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case ipaddresslog.FieldID:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field id", values[i])
-			} else if value.Valid {
-				ial.ID = value.String
+			value, ok := values[i].(*sql.NullInt64)
+			if !ok {
+				return fmt.Errorf("unexpected type %T for field id", value)
 			}
+			ial.ID = int(value.Int64)
 		case ipaddresslog.FieldIPAddress:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field ip_address", values[i])
@@ -102,20 +104,20 @@ func (ial *IPAddressLog) assignValues(columns []string, values []any) error {
 				ial.UpdatedAt = value.Time
 			}
 		case ipaddresslog.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field post_ip_address_log", values[i])
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field post_ip_address_log", value)
 			} else if value.Valid {
-				ial.post_ip_address_log = new(string)
-				*ial.post_ip_address_log = value.String
+				ial.post_ip_address_log = new(int)
+				*ial.post_ip_address_log = int(value.Int64)
 			}
 		}
 	}
 	return nil
 }
 
-// QueryPostID queries the "post_id" edge of the IPAddressLog entity.
-func (ial *IPAddressLog) QueryPostID() *PostQuery {
-	return NewIPAddressLogClient(ial.config).QueryPostID(ial)
+// QueryPost queries the "post" edge of the IPAddressLog entity.
+func (ial *IPAddressLog) QueryPost() *PostQuery {
+	return NewIPAddressLogClient(ial.config).QueryPost(ial)
 }
 
 // Update returns a builder for updating this IPAddressLog.

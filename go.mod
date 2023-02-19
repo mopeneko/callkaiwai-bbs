@@ -29,6 +29,7 @@ require (
 require (
 	entgo.io/ent v0.11.8
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
-	github.com/rs/xid v1.4.0
+	github.com/go-sql-driver/mysql v1.7.0
 	golang.org/x/text v0.7.0 // indirect
+	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2
 )
