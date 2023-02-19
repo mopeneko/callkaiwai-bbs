@@ -10,6 +10,7 @@ import (
 	"github.com/mopeneko/callkaiwai-bbs/back/ent"
 	"github.com/mopeneko/callkaiwai-bbs/back/gen/callkaiwaibbs/v1/callkaiwaibbsv1connect"
 	"github.com/mopeneko/callkaiwai-bbs/back/handler/callkaiwaiservice"
+	"github.com/mopeneko/callkaiwai-bbs/back/service"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 	"golang.org/x/xerrors"
@@ -23,7 +24,9 @@ func main() {
 
 	defer db.Close()
 
-	service := callkaiwaiservice.NewCallKaiwaiServiceHandler(db)
+	service := &callkaiwaiservice.CallKaiwaiService{
+		PostService: service.NewPostService(db),
+	}
 	mux := http.NewServeMux()
 	path, handler := callkaiwaibbsv1connect.NewCallKaiwaiBBSServiceHandler(service)
 	mux.Handle(path, handler)
