@@ -10,6 +10,22 @@ message PingResponse {
   string text = 1;
 }
 
+message CreateNewPostRequest {
+  string name = 1;
+  int32 gender = 2;
+  string introduction = 3;
+  string tweet_url = 4;
+  string tiktok_url = 5;
+  string contact_url = 6;
+  string contact_id = 7;
+}
+
+message CreateNewPostResponse {
+  string id = 1;
+}
+
 service CallKaiwaiBBSService {
   rpc Ping(PingRequest) returns (PingResponse) {}
+
+  rpc CreateNewPost(CreateNewPostRequest) returns (CreateNewPostResponse) {}
 }
