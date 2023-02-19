@@ -28,6 +28,7 @@ const (
 // CallKaiwaiBBSServiceClient is a client for the callkaiwaibbs.v1.CallKaiwaiBBSService service.
 type CallKaiwaiBBSServiceClient interface {
 	Ping(context.Context, *connect_go.Request[v1.PingRequest]) (*connect_go.Response[v1.PingResponse], error)
+	CreateNewPost(context.Context, *connect_go.Request[v1.CreateNewPostRequest]) (*connect_go.Response[v1.CreateNewPostResponse], error)
 }
 
 // NewCallKaiwaiBBSServiceClient constructs a client for the callkaiwaibbs.v1.CallKaiwaiBBSService
@@ -45,12 +46,18 @@ func NewCallKaiwaiBBSServiceClient(httpClient connect_go.HTTPClient, baseURL str
 			baseURL+"/callkaiwaibbs.v1.CallKaiwaiBBSService/Ping",
 			opts...,
 		),
+		createNewPost: connect_go.NewClient[v1.CreateNewPostRequest, v1.CreateNewPostResponse](
+			httpClient,
+			baseURL+"/callkaiwaibbs.v1.CallKaiwaiBBSService/CreateNewPost",
+			opts...,
+		),
 	}
 }
 
 // callKaiwaiBBSServiceClient implements CallKaiwaiBBSServiceClient.
 type callKaiwaiBBSServiceClient struct {
-	ping *connect_go.Client[v1.PingRequest, v1.PingResponse]
+	ping          *connect_go.Client[v1.PingRequest, v1.PingResponse]
+	createNewPost *connect_go.Client[v1.CreateNewPostRequest, v1.CreateNewPostResponse]
 }
 
 // Ping calls callkaiwaibbs.v1.CallKaiwaiBBSService.Ping.
@@ -58,10 +65,16 @@ func (c *callKaiwaiBBSServiceClient) Ping(ctx context.Context, req *connect_go.R
 	return c.ping.CallUnary(ctx, req)
 }
 
+// CreateNewPost calls callkaiwaibbs.v1.CallKaiwaiBBSService.CreateNewPost.
+func (c *callKaiwaiBBSServiceClient) CreateNewPost(ctx context.Context, req *connect_go.Request[v1.CreateNewPostRequest]) (*connect_go.Response[v1.CreateNewPostResponse], error) {
+	return c.createNewPost.CallUnary(ctx, req)
+}
+
 // CallKaiwaiBBSServiceHandler is an implementation of the callkaiwaibbs.v1.CallKaiwaiBBSService
 // service.
 type CallKaiwaiBBSServiceHandler interface {
 	Ping(context.Context, *connect_go.Request[v1.PingRequest]) (*connect_go.Response[v1.PingResponse], error)
+	CreateNewPost(context.Context, *connect_go.Request[v1.CreateNewPostRequest]) (*connect_go.Response[v1.CreateNewPostResponse], error)
 }
 
 // NewCallKaiwaiBBSServiceHandler builds an HTTP handler from the service implementation. It returns
@@ -76,6 +89,11 @@ func NewCallKaiwaiBBSServiceHandler(svc CallKaiwaiBBSServiceHandler, opts ...con
 		svc.Ping,
 		opts...,
 	))
+	mux.Handle("/callkaiwaibbs.v1.CallKaiwaiBBSService/CreateNewPost", connect_go.NewUnaryHandler(
+		"/callkaiwaibbs.v1.CallKaiwaiBBSService/CreateNewPost",
+		svc.CreateNewPost,
+		opts...,
+	))
 	return "/callkaiwaibbs.v1.CallKaiwaiBBSService/", mux
 }
 
@@ -84,4 +102,8 @@ type UnimplementedCallKaiwaiBBSServiceHandler struct{}
 
 func (UnimplementedCallKaiwaiBBSServiceHandler) Ping(context.Context, *connect_go.Request[v1.PingRequest]) (*connect_go.Response[v1.PingResponse], error) {
 	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("callkaiwaibbs.v1.CallKaiwaiBBSService.Ping is not implemented"))
+}
+
+func (UnimplementedCallKaiwaiBBSServiceHandler) CreateNewPost(context.Context, *connect_go.Request[v1.CreateNewPostRequest]) (*connect_go.Response[v1.CreateNewPostResponse], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("callkaiwaibbs.v1.CallKaiwaiBBSService.CreateNewPost is not implemented"))
 }
